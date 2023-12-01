@@ -14,10 +14,10 @@ import com.showroom.entity.Customer;
 public interface CustomerRepository extends JpaRepository<Customer, Integer> {
 
 	public Optional<Customer> findByFirstNameAndLastNameAndPhoneNo(String firstName, String lastname, String phoneNo);
-
 	Page<Customer> findAllByUserType(UserType userType,Pageable page);
 	Page<Customer> findAllByFirstNameLikeOrLastNameLikeOrEmailLikeOrPhoneNoOrAddressLikeAndUserType(String firstName,
 																									String lastName, String email, String phoneNo, String address, UserType userType, Pageable pageable);
-
 	Optional<Customer> findByFirstNameAndPassword(String name, String password);
+	Optional<Customer> findByEmail(String email);
+
 }

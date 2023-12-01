@@ -9,13 +9,13 @@ import lombok.Setter;
 @Setter
 @Table(name = "showroom_details")
 @Entity
-
 public class ShowRoomDetails {
     @Id
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @GeneratedValue(strategy = GenerationType.SEQUENCE,
-            generator = "sequence-generator")
+            generator = "sequence-generator-s")
     @SequenceGenerator(
-            name = "sequence-generator",
+            name = "sequence-generator-s",
             sequenceName = "showroom_sequence",
             allocationSize = 1
     )

@@ -39,14 +39,17 @@ public class OrderItemServiceImpl implements OrderItemService {
             (int customerId, String sortBy, String sortDirection, int pageNo, int pageSize) {
         Response response = new Response();
         try {
-            if (sortBy.equals("name")) {
+//            if (sortBy.equals("name")) {}
 
-            }
             Pageable page = PageRequest.of(pageNo, pageSize,
                     Sort.by(sortDirection.equals("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy));
+
             Optional<Customer> existingCustomer = customerRepository.findById(customerId);
+
             if (existingCustomer.isPresent()) {
                 Page<OrderItem> orderItemList = orderItemRepository.findAllOrderedItemOfCustomerByCustomerId(customerId, page);
+                //set the buy date of order items
+                orderItemList.getContent().forEach(i -> i.setOrderItemBuyDate(i.getOrder().getOrderDate()));
                 response.setResponseData(orderItemList);
                 response.setSuccess(true);
             } else {
@@ -63,8 +66,10 @@ public class OrderItemServiceImpl implements OrderItemService {
     public Response getOrderItemById(int orderItemId) {
         Response response = new Response();
         try {
-            Optional<OrderItem> orderItemOptional = orderItemRepository.findById(orderItemId);
-            response.setResponseData(orderItemOptional.get());
+            Optional<OrderItem> orderItem = orderItemRepository.findById(orderItemId);
+            //set the buy date of order item
+            orderItem.get().setOrderItemBuyDate(orderItem.get().getOrder().getOrderDate());
+            response.setResponseData(orderItem.get());
             response.setSuccess(true);
         } catch (Exception e) {
             response.getErrMssg().add("OrderItem not found");
@@ -79,10 +84,33 @@ public class OrderItemServiceImpl implements OrderItemService {
         try {
             List<Object[]> orderedVehicles = orderItemRepository.getOrderItemDetails(start, end);
             List<String> rowHeader = List.of("Vehicle Name", "quantity", "Total Revenue");
-            result = excelService.generateExcel("ordered vehicles", orderedVehicles, rowHeader, start, end);
+            result = excelService.generateExcel("ordered vehicles", orderedVehicles, rowHeader);
         } catch (Exception e) {
             log.error("Error in generateExcelOfOrderedVehicle ", e);
         }
         return result;
+    }
+
+    public OrderItem processItem(OrderItem item) {
+        item.setInitialPrice(item.getVehicle().getPrice());
+
+        double initialPrice = item.getInitialPrice();
+        // get additional charge
+        double additionalChargesOfColor = item.getColor().getAdditionalCharges(initialPrice);
+
+        // get discount
+        double discount = 0;
+        switch (item.getVehicle().getVehicleType()) {
+            case CAR -> discount = item.getFuelType().getDiscountedPrice(initialPrice);
+            case BIKE -> discount = item.getVehicle().getTwoWheelerType().getDiscountedPrice(initialPrice);
+        }
+        initialPrice += additionalChargesOfColor;
+        initialPrice -= discount;
+        item.setDiscount(discount);
+        item.setAdditionalCharges(additionalChargesOfColor);
+
+        item.setFinalPrice(initialPrice * item.getQuantity());
+
+        return item;
     }
 }

@@ -11,5 +11,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class MiscellaneousCost {
     private String name;
-    private String price;
+    private Double price;
 }

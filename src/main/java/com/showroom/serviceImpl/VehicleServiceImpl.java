@@ -43,26 +43,26 @@ public class VehicleServiceImpl implements VehicleService {
 			}
 		} catch (Exception e) {
 			response.getErrMssg().add("Vehicle not added");
-			if (e.getCause().getCause() instanceof ConstraintViolationException cv) {
-				response.getErrMssg().addAll(cv.getConstraintViolations().stream().map(ConstraintViolation::getMessage)
-						.collect(Collectors.toList()));
-			} else {
+//			if (e.getCause().getCause() instanceof ConstraintViolationException cv) {
+//				response.getErrMssg().addAll(cv.getConstraintViolations().stream().map(ConstraintViolation::getMessage)
+//						.toList());
+//			} else {
 				log.error("Error occurred in createVehicle ", e);
-			}
+//			}
 		}
 		return response;
 	}
 
 	@Override
-	public Response updateVehicle(Vehicle vehcile) {
+	public Response updateVehicle(Vehicle vehicle) {
 		Response response = new Response();
 		try {
 			// check if exist
-			Optional<Vehicle> existingVehicle = vehicleRepository.findById(vehcile.getId());
+			Optional<Vehicle> existingVehicle = vehicleRepository.findById(vehicle.getId());
 			// if exist
 			if (existingVehicle.isPresent()) {
 				// update customer
-				Vehicle updatedVehicle = vehicleRepository.save(vehcile);
+				Vehicle updatedVehicle = vehicleRepository.save(vehicle);
 				response.setResponseData(updatedVehicle);
 				response.setSuccess(true);
 			} else {
@@ -70,12 +70,12 @@ public class VehicleServiceImpl implements VehicleService {
 			}
 		} catch (Exception e) {
 			response.getErrMssg().add("Vehicle not updated");
-			if (e.getCause().getCause() instanceof ConstraintViolationException cv) {
-				response.getErrMssg().addAll(cv.getConstraintViolations().stream().map(ConstraintViolation::getMessage)
-						.collect(Collectors.toList()));
-			} else {
+//			if (e.getCause().getCause() instanceof ConstraintViolationException cv) {
+//				response.getErrMssg().addAll(cv.getConstraintViolations().stream().map(ConstraintViolation::getMessage)
+//						.toList());
+//			} else {
 				log.error("Error in updateVehicle {}", e);
-			}
+//			}
 		}
 		return response;
 	}
@@ -126,16 +126,21 @@ public class VehicleServiceImpl implements VehicleService {
 
 		Response response = new Response();
 		try {
+			// sort ( direction, column)
 			Sort sort = Sort.by(sortDirection.equals("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC, columnToSort);
 
 //            Pageable page = PageRequest.of(pageNumber, pageSize, sort);
+			// all vehicles
 			List<Vehicle> vehicleList = vehicleRepository.findAll(sort);
+			// if start price given and end price
 			if (startPrice >= 0 && endPrice >= 0) {
 				vehicleList = vehicleRepository.findAllByPriceBetween(startPrice, endPrice,sort);
 			}
 
+			// if vehicle type given
 			if(vehicleType!=null){
 				vehicleList = vehicleRepository.findAllByPriceBetweenAndVehicleType(startPrice, endPrice,vehicleType,sort);
+				// if two wheeler type given
 				if(twoWheelerType!=null){
 					vehicleList = vehicleRepository.findAllByPriceBetweenAndVehicleTypeAndTwoWheelerType(startPrice, endPrice,vehicleType,twoWheelerType,sort);
 				}

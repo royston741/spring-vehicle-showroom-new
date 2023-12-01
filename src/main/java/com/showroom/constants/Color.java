@@ -3,7 +3,8 @@ package com.showroom.constants;
 public enum Color {
     PINK(9),
     BLACK(8),
-    RED(7);
+    RED(7),
+    WHITE(0);
     private double charges;
     Color(double charges) {
         this.charges = charges;

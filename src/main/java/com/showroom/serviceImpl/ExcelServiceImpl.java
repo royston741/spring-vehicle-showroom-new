@@ -19,32 +19,34 @@ import java.util.List;
 @Service
 public class ExcelServiceImpl implements ExcelService {
     @Override
-    public byte[] generateExcel(String sheetName,List<Object[]> result,List<String> rowHeader,LocalDate start, LocalDate end) {
+    public byte[] generateExcel(String sheetName, List<Object[]> result, List<String> rowHeader) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
 
-        HSSFWorkbook workbook = new HSSFWorkbook();
-        HSSFSheet sheet = workbook.createSheet(sheetName);
-        HSSFRow row = sheet.createRow(0);
+            HSSFWorkbook workbook = new HSSFWorkbook();
+            HSSFSheet sheet = workbook.createSheet(sheetName);
+            HSSFRow row = sheet.createRow(0);
 
-        int rowHeaderCellIndex = 0;
-        while (rowHeaderCellIndex < rowHeader.size()) {
-            row.createCell(rowHeaderCellIndex).setCellValue(rowHeader.get(rowHeaderCellIndex));
-            rowHeaderCellIndex++;
-        }
+            int rowHeaderCellIndex = 0;
+            // create header cell for given header list
+            while (rowHeaderCellIndex < rowHeader.size()) {
+                row.createCell(rowHeaderCellIndex).setCellValue(rowHeader.get(rowHeaderCellIndex));
+                rowHeaderCellIndex++;
+            }
 
-        int rowDataIndex=1;
-        for (Object[] o :result){
-            HSSFRow dataRow = sheet.createRow(rowDataIndex);
-            dataRow.createCell(0).setCellValue((String) o[0]);
-            dataRow.createCell(1).setCellValue(String.valueOf(o[1]));
-            dataRow.createCell(2).setCellValue(String.valueOf( o[2]));
-            rowDataIndex++;
-        }
+            int rowDataIndex = 1;
+            for (Object[] o : result) {
+                HSSFRow dataRow = sheet.createRow(rowDataIndex);
+                dataRow.createCell(0).setCellValue((String) o[0]);
+                dataRow.createCell(1).setCellValue(String.valueOf(o[1]));
+                dataRow.createCell(2).setCellValue(String.valueOf(o[2]));
+                rowDataIndex++;
+            }
             File file = new File("D:\\excel.xls");
             file.createNewFile();
             FileOutputStream outputStream = new FileOutputStream(file, false);
             workbook.write(outputStream);
+
             workbook.write(byteArrayOutputStream);
         } catch (IOException e) {
             log.error("Error in generateExcel {}", e);

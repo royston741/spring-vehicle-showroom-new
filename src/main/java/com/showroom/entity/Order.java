@@ -3,19 +3,7 @@ package com.showroom.entity;
 import java.sql.Date;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.SequenceGenerator;
-import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
@@ -27,12 +15,13 @@ import lombok.*;
 public class Order {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence-generator")
-	@SequenceGenerator(name = "sequence-generator", sequenceName = "order_sequence", allocationSize = 1)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence-generator-order")
+	@SequenceGenerator(name = "sequence-generator-order", sequenceName = "order_sequence", allocationSize = 1)
 	@Column(name = "order_id")
 	private Integer id;
 
-	@Temporal(TemporalType.DATE)
+	@Temporal(TemporalType.DATE)  // save only date exclude time stc
 	@Column(name = "order_date")
 	private Date orderDate;
 
@@ -42,6 +31,6 @@ public class Order {
 	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, mappedBy = "order")
 	private List<OrderItem> orderItem;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	private Customer customer;
 }

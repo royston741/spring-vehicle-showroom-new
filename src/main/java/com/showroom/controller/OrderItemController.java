@@ -47,7 +47,6 @@ public class OrderItemController {
             @RequestParam(name = "startQuantity",defaultValue = "0") int startQuantity,
             @RequestParam(name = "endQuantity", defaultValue = "0") int endQuantity
     ) {
-        System.out.println(filterBy);
         byte[] response = orderItemService.generateExcelOfOrderedVehicle(filterBy ,startDate, endDate,startQuantity,endQuantity);
         return new ResponseEntity<>(response,HttpStatus.OK);
     }

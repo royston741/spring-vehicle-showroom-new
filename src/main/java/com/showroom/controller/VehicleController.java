@@ -72,21 +72,29 @@ public class VehicleController {
 
     @GetMapping("/getExtraChargeByColor")
     public ResponseEntity<Response> getExtraChargeByColor(){
-        List<MiscellaneousCost> colorCharges = Arrays.stream(Color.values()).map(c -> new MiscellaneousCost(c.name(), Double.toString(c.getCharges()))).toList();
+        List<MiscellaneousCost> colorCharges = Arrays.stream(Color.values()).map(c -> new MiscellaneousCost(c.name(), c.getCharges())).toList();
         Response response=new Response(true,new ArrayList<>(),colorCharges);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/getDiscountByFuelType")
     public ResponseEntity<Response> getDiscountByFuelType(){
-        List<MiscellaneousCost> fuelTypeDiscount = Arrays.stream(FuelType.values()).map(c -> new MiscellaneousCost(c.name(), Double.toString(c.getDiscount()))).toList();
+        List<MiscellaneousCost> fuelTypeDiscount = Arrays.stream(FuelType.values()).map(c -> new MiscellaneousCost(c.name(), c.getDiscount())).toList();
         Response response = new Response(true,new ArrayList<>(),fuelTypeDiscount);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/getDiscountByTwoWheelerType")
     public ResponseEntity<Response> getDiscountByTwoWheelerType(){
-        List<MiscellaneousCost> twoWheelerTypeDiscount = Arrays.stream(TwoWheelerType.values()).map(c -> new MiscellaneousCost(c.name(), Double.toString(c.getDiscount()))).toList();
+        List<MiscellaneousCost> twoWheelerTypeDiscount = Arrays.stream(TwoWheelerType.values()).map(c -> new MiscellaneousCost(c.name(),c.getDiscount())).toList();
+        Response response = new Response(true,new ArrayList<>(),twoWheelerTypeDiscount);
+        return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    }
+
+
+    @GetMapping("/getVehicleType")
+    public ResponseEntity<Response> getVehicleType(){
+        List<VehicleType> twoWheelerTypeDiscount = Arrays.stream(VehicleType.values()).toList();
         Response response = new Response(true,new ArrayList<>(),twoWheelerTypeDiscount);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }

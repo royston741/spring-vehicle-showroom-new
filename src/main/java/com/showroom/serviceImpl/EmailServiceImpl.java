@@ -46,7 +46,7 @@ public class EmailServiceImpl implements EmailService {
 //        simpleMailMessage.setText(message);
 //        simpleMailSender.send(simpleMailMessage);
 
-        // create mine message
+        // create mine message for additional things like attachments
         MimeMessage mimeMailMessage = javaMailSender.createMimeMessage();
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMailMessage, true);
@@ -56,7 +56,7 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.setTo(email.getEmailTo());
             // subject
             mimeMessageHelper.setSubject(email.getSubject());
-            //Html link
+            //Html
             mimeMessageHelper.setText(getHtml(email.getHtmlContentLink()), true);
             // for every cc
             Arrays.stream(ccEmails).toList().forEach(mail -> {
@@ -67,14 +67,15 @@ public class EmailServiceImpl implements EmailService {
                 }
             });
 
-                // for every attachment
-                email.getAttachments().forEach((attachment) -> {
-                    try {
-                        mimeMessageHelper.addAttachment(attachment.getFilename(), new ByteArrayResource(attachment.getAttachment()));
-                    } catch (MessagingException e) {
-                        throw new RuntimeException(e);
-                    }
-                });
+            // for every attachment
+            email.getAttachments().forEach((attachment) -> {
+                try {
+                    mimeMessageHelper.addAttachment(attachment.getFilename(), new ByteArrayResource(attachment.getAttachment()));
+                } catch (MessagingException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+
             javaMailSender.send(mimeMailMessage);
         } catch (Exception e) {
             log.error("Error in sendMail {}", e);

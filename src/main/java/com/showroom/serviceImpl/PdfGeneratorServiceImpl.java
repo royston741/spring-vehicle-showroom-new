@@ -42,7 +42,7 @@ public class PdfGeneratorServiceImpl implements PdfGeneratorService {
 
         // Supplier details
         document.add(((Paragraph) createParagraph("Showroom details :")).setPadding(0).setMargin(0).setMarginTop(20).setBold());
-        Table showroomTable = new Table(new float[]{400, 400});
+//        Table showroomTable = new Table(new float[]{400, 400});
         LinkedHashMap<String, String> showroomTableColNames = new LinkedHashMap<>();
         showroomTableColNames.put("name ",showRoomDetails.getName());
         showroomTableColNames.put("Address ",showRoomDetails.getAddress());

@@ -46,40 +46,55 @@ public class OrderServiceImpl implements OrderService {
     public Response placeOrder(Order order, int customerId) {
         Response response = new Response();
         try {
-            // check if exist
+            // check if customer exist
             Optional<Customer> existingCustomer = customerRepository.findById(customerId);
 
             // if exist
             if (existingCustomer.isPresent()) {
+                // process order
                 List<OrderItem> processedOrderItemList = processOrder(order);
 
+                // set order item
                 order.setOrderItem(processedOrderItemList);
+                // set order date
                 order.setOrderDate(Date.valueOf(LocalDate.now()));
+                // set customer
                 order.setCustomer(existingCustomer.get());
 
                 Double orderTotal = order.getOrderItem().stream()
                         .map(OrderItem::getFinalPrice)
                         .reduce(0.0, Double::sum);
                 order.setTotal(orderTotal);
+
                 Order savedOrder = orderRepository.save(order);
                 response.setResponseData(savedOrder);
                 response.setSuccess(true);
 
+                // SENDING MAIL //
                 Customer customerDetails = existingCustomer.get();
+                // get show room details
                 ShowRoomDetails showRoomDetails = showroomRepository.findById(1).get();
+                // generate pdf
                 byte[] document = pdfGeneratorService.generatePdf(customerDetails, order, showRoomDetails);
 //                byte[] document =new byte[0];
+
+                // Create a emilDTo
                 EmailDto newEmail = new EmailDto();
+                // send to
                 newEmail.setEmailTo(customerDetails.getEmail());
+                // set subject
                 newEmail.setSubject(EmailConstants.ORDER_INVOICE_SUBJECT);
-                newEmail.setHtmlContentLink("D:\\New folder\\demo\\src\\main\\resources\\templates\\index.html");
+                // set html content
+                newEmail.setHtmlContentLink("D:\\vehicle project\\New folder\\spring-vehicle-showroom-new\\src\\main\\resources\\templates\\index.html");
+                // add attachments
                 newEmail.getAttachments().add(new FileMetaData(1, "order-invoice.pdf", document));
+                // send mail
                 emailService.sendMail(newEmail);
             } else {
                 response.getErrMssg().add("Customer not found: " + customerId);
             }
         } catch (Exception e) {
-            response.getErrMssg().add("Order not saved");
+            response.getErrMssg().add("Order not placed");
             log.error("Error in placeOrder {}", e);
         }
         return response;
@@ -133,12 +148,18 @@ public class OrderServiceImpl implements OrderService {
     }
 
     public List<OrderItem> processOrder(Order order) {
+        // return a stream of processed item
         return order.getOrderItem().stream().map(item -> {
+            // set item type to order
             item.setItemType(ItemType.ORDER);
+            // set initial price
             item.setInitialPrice(item.getVehicle().getPrice());
 
             double initialPrice = item.getInitialPrice();
+            // get additional charge
             double additionalChargesOfColor = item.getColor().getAdditionalCharges(initialPrice);
+
+            // get discount
             double discount = 0;
             switch (item.getVehicle().getVehicleType()) {
                 case CAR -> discount = item.getFuelType().getDiscountedPrice(initialPrice);

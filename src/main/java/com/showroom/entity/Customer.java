@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.showroom.constants.UserType;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -25,8 +26,9 @@ import lombok.ToString;
 public class Customer {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence-generator")
-	@SequenceGenerator(name = "sequence-generator", sequenceName = "customer_sequence", allocationSize = 1)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence-generator-customer")
+	@SequenceGenerator(name = "sequence-generator-customer", sequenceName = "customer_sequence", allocationSize = 1) // allocation size amount to increment
 	@Column(name = "customer_id")
 	private Integer id;
 
@@ -41,7 +43,8 @@ public class Customer {
 	private String lastName;
 
 	@NotBlank(message = "Gmail must not be empty")
-	@Size(min = 7, message = "gmail name should be of at least of 7 letters")
+//	@Size(min = 7, message = "gmail name should be of at least of 7 letters")
+	@Email(regexp = "[a-z0-9$&+,:;=?@#|'<>.^*()%!-]+@[a-z]+\\.[a-z]{2,3}", message = "Email is not valid")
 	@Column(name = "email")
 	private String email;
 

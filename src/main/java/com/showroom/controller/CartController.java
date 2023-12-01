@@ -23,14 +23,14 @@ public class CartController {
     }
 
     @PostMapping("/addToCart/{id}")
-    public ResponseEntity<Response> addToCart(@RequestBody OrderItem orderItem,@PathVariable(name = "id") int customerId) {
-        Response response = cartService.addToCart(orderItem,customerId);
+    public ResponseEntity<Response> addToCart(@RequestBody OrderItem addACartItem,@PathVariable(name = "id") int customerId) {
+        Response response = cartService.addToCart(addACartItem,customerId);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/removeItemFromCart/{id}")
-    public ResponseEntity<Response> removeItemFromCart(@RequestBody OrderItem orderItem,@PathVariable(name = "id") int customerId) {
-        Response response = cartService.removeItemFromCart(orderItem,customerId);
+    public ResponseEntity<Response> removeItemFromCart(@RequestBody OrderItem removeCartItem,@PathVariable(name = "id") int customerId) {
+        Response response = cartService.removeItemFromCart(removeCartItem,customerId);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 

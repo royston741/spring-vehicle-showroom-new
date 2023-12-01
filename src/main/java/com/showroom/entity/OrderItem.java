@@ -8,6 +8,8 @@ import com.showroom.constants.ItemType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -18,15 +20,16 @@ import lombok.*;
 public class OrderItem {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence-generator")
-	@SequenceGenerator(name = "sequence-generator", sequenceName = "order_item_sequence", allocationSize = 1)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence-generator-item")
+	@SequenceGenerator(name = "sequence-generator-item", sequenceName = "order_item_sequence", allocationSize = 1)
 	@Column(name = "order_item_id")
 	private Integer id;
 
 	@Column(name = "quantity")
 	private int quantity;
 
-	@Enumerated(EnumType.STRING)
+	@Enumerated(EnumType.STRING) // save the enum as string
 	@Column(name = "color")
 	private Color color;
 
@@ -44,13 +47,16 @@ public class OrderItem {
 	@Column(name = "final_price")
 	private Double finalPrice;
 
-	@Transient
+	@Transient // don't save this fields
 	private Double discount;
 
 	@Transient
 	private Double additionalCharges;
 
-	@JsonIgnore
+	@Transient
+	private Date orderItemBuyDate;
+
+	@JsonIgnore // Ignore the data when serialization
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Order order;
 
@@ -58,6 +64,6 @@ public class OrderItem {
 	@ManyToOne(fetch = FetchType.LAZY)
 	private Cart cart;
 
-	@OneToOne
+	@ManyToOne
 	private Vehicle vehicle;
 }

@@ -18,8 +18,9 @@ import lombok.*;
 public class Vehicle {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence-generator")
-	@SequenceGenerator(name = "sequence-generator", sequenceName = "vehicle_sequence", allocationSize = 1)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence-generator-vehicle")
+	@SequenceGenerator(name = "sequence-generator-vehicle", sequenceName = "vehicle_sequence", allocationSize = 1)
 	@Column(name = "vehicle_id")
 	private Integer id;
 
@@ -45,5 +46,9 @@ public class Vehicle {
 	@NotBlank(message = "img must not be empty")
 	@Column(name = "imgUrl")
 	private String imgUrl;
+
+//	@Lob
+	@Column(name = "description",columnDefinition = "TEXT")
+	private String description;
 
 }
