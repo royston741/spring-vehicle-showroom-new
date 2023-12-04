@@ -16,26 +16,26 @@ public class CartController {
     @Autowired
     CartService cartService;
 
-    @GetMapping("/getCartByCustomerId/{id}")
-    public ResponseEntity<Response> getCartByCustomerId(@PathVariable(name = "id") int id) {
+    @GetMapping("/getCartByCustomerId")
+    public ResponseEntity<Response> getCartByCustomerId(@RequestParam(name = "id") int id) {
         Response response = cartService.getCartByCustomerId(id);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    @PostMapping("/addToCart/{id}")
-    public ResponseEntity<Response> addToCart(@RequestBody OrderItem addACartItem,@PathVariable(name = "id") int customerId) {
+    @PostMapping("/addToCart")
+    public ResponseEntity<Response> addToCart(@RequestBody OrderItem addACartItem,@RequestParam(name = "id") int customerId) {
         Response response = cartService.addToCart(addACartItem,customerId);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    @PutMapping("/removeItemFromCart/{id}")
-    public ResponseEntity<Response> removeItemFromCart(@RequestBody OrderItem removeCartItem,@PathVariable(name = "id") int customerId) {
+    @PutMapping("/removeItemFromCart")
+    public ResponseEntity<Response> removeItemFromCart(@RequestBody OrderItem removeCartItem,@RequestParam(name = "id") int customerId) {
         Response response = cartService.removeItemFromCart(removeCartItem,customerId);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/clearCart/{id}")
-    public ResponseEntity<Response> clearCart(@PathVariable(name = "id") int customerId) {
+    @GetMapping("/clearCart")
+    public ResponseEntity<Response> clearCart(@RequestParam(name = "id") int customerId) {
         Response response = cartService.clearCart(customerId);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }

@@ -23,8 +23,8 @@ public class CustomerController {
 		return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
 	}
 
-	@GetMapping("/getCustomerById/{id}")
-	public ResponseEntity<Response> getCustomerById(@PathVariable(name = "id") int id) {
+	@GetMapping("/getCustomerById")
+	public ResponseEntity<Response> getCustomerById(@RequestParam(name = "id",defaultValue = "0") int id) {
 		Response response = customerService.getCustomerById(id);
 		return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
 	}

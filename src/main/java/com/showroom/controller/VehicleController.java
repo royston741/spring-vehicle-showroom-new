@@ -33,8 +33,8 @@ public class VehicleController {
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/getVehicleById/{id}")
-    public ResponseEntity<Response> getVehicleById(@PathVariable(name = "id") int id) {
+    @GetMapping("/getVehicleById")
+    public ResponseEntity<Response> getVehicleById(@RequestParam(name = "id",defaultValue = "0") int id) {
         Response response = vehicleService.getVehicleById(id);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
@@ -51,8 +51,8 @@ public class VehicleController {
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    @DeleteMapping("/deleteVehicleById/{id}")
-    public ResponseEntity<Response> deleteVehicleById(@PathVariable(name = "id") int id) {
+    @DeleteMapping("/deleteVehicleById")
+    public ResponseEntity<Response> deleteVehicleById(@RequestParam(name = "id",defaultValue = "0") int id) {
         Response response = vehicleService.deleteVehicleById(id);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
@@ -62,7 +62,6 @@ public class VehicleController {
         Response response = vehicleService.updateVehicle(vehicle);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
-
 
     @GetMapping("getMaxAndMinPrice")
     public ResponseEntity<Response> getMaxAndMinPrice() {

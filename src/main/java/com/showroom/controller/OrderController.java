@@ -18,8 +18,8 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
-    @PostMapping("/placeOrder/{customerId}")
-    public ResponseEntity<Response> placeOrder(@RequestBody Order order, @PathVariable(name = "customerId") int id) {
+    @PostMapping("/placeOrder")
+    public ResponseEntity<Response> placeOrder(@RequestBody Order order, @RequestParam(name = "customerId",defaultValue = "0") int id) {
         Response response = orderService.placeOrder(order,id);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
@@ -31,8 +31,8 @@ public class OrderController {
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/getOrdersOfCustomerByCustomerId/{id}")
-    public ResponseEntity<Response> getOrdersOfCustomerByCustomerId(@PathVariable("id") int customerId) {
+    @GetMapping("/getOrdersOfCustomerByCustomerId")
+    public ResponseEntity<Response> getOrdersOfCustomerByCustomerId(@RequestParam(value = "id",defaultValue = "0") int customerId) {
         Response response = orderService.getOrdersOfCustomerByCustomerId(customerId);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }

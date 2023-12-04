@@ -32,8 +32,8 @@ public class OrderItemController {
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/getOrderItemById/{id}")
-    public ResponseEntity<Response> getOrderItemById(@PathVariable(name = "id") int id) {
+    @GetMapping("/getOrderItemById")
+    public ResponseEntity<Response> getOrderItemById(@RequestParam(name = "id") int id) {
         Response response = orderItemService.getOrderItemById(id);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }

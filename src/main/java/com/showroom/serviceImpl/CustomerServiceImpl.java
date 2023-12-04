@@ -20,6 +20,7 @@ import com.showroom.service.CustomerService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -29,7 +30,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     CustomerRepository customerRepository;
 
-    //    @Transactional( noRollbackFor = SQLIntegrityConstraintViolationException.class)
+    //    @Transactional
     @Override
     public Response createCustomer(Customer customer) {
         Response response = new Response();
@@ -56,23 +57,30 @@ public class CustomerServiceImpl implements CustomerService {
                 response.setResponseData(savedCustomer);
                 response.setSuccess(true);
             }
-        } catch (ConstraintViolationException e) {  // if constraint voilated
-            response.getErrMssg().addAll(e.getConstraintViolations().stream().map(ConstraintViolation::getMessage).toList());
-        } catch (EmailDuplicationException e) { // email duplicated
+        }
+//        catch (ConstraintViolationException e) {  // if constraint voilated
+//            response.getErrMssg().addAll(e.getConstraintViolations().stream().map(ConstraintViolation::getMessage).toList());
+//        }
+        catch (EmailDuplicationException e) { // email duplicated
             response.getErrMssg().add(e.getMessage());
         } catch (Exception e) {
-            response.getErrMssg().add("User not added");
-            log.error("Error in createCustomer {}", e);
+            System.out.println("This is Exaception");
+            if (e.getCause().getCause() instanceof ConstraintViolationException cv) {
+                response.getErrMssg().addAll(cv.getConstraintViolations().stream().map(ConstraintViolation::getMessage)
+                        .toList());
+            } else {
+                response.getErrMssg().add("Customer not created");
+                log.error("Error in createCustomer {}", e);
+            }
         }
         return response;
     }
 
-    //        @Transactional
-//    @Override
+//    @Transactional(rollbackFor = ConstraintViolationException.class)
+    @Override
     public Response updateCustomer(Customer customer) {
         Response response = new Response();
         try {
-
             // check if email is already present
             Optional<Customer> existingMail = customerRepository.findByEmail(customer.getEmail());
             // if email is present and phone no. not equal to given customer phone no
