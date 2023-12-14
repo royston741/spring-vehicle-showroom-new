@@ -10,11 +10,22 @@ import com.showroom.entity.MiscellaneousCost;
 import com.showroom.entity.Response;
 import com.showroom.entity.Vehicle;
 import com.showroom.service.VehicleService;
+import jakarta.mail.Multipart;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,9 +38,22 @@ public class VehicleController {
     @Autowired
     VehicleService vehicleService;
 
-    @PostMapping("/createVehicle")
-    public ResponseEntity<Response> createVehicle(@RequestBody Vehicle vehicle) {
+//    @PostMapping(value = "/createVehicle", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+//    public ResponseEntity<Response> createVehicle(@RequestPart Vehicle vehicle, @RequestPart MultipartFile vehicleImageFile) throws IOException {
+        @PostMapping(value = "/createVehicle")
+        public ResponseEntity<Response> createVehicle(@RequestBody Vehicle vehicle) {
+
+//            System.out.println(vehicle);
+//        byte[] array=vehicleImageFile.getBytes();
+//        System.out.println(array);
+//        ByteArrayInputStream bos=new ByteArrayInputStream(array);
+//        BufferedImage newImage = ImageIO.read(bos);
+//        // write output image
+//      boolean b=  ImageIO.write(newImage, "jpg", new File(vehicle.getName()+".jpg"));
+//        System.out.println(b);
+//        vehicle.setVehicleImg(vehicleImageFile.getBytes());
         Response response = vehicleService.createVehicle(vehicle);
+//        Response response=new Response();
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
@@ -39,6 +63,12 @@ public class VehicleController {
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
+//    @GetMapping("/getImg")
+//    public ResponseEntity<ByteArrayInputStream> getImg(@RequestParam(name = "id",defaultValue = "0") int id, HttpServletRequest request, HttpServletResponse respons) {
+//        ByteArrayInputStream response = vehicleService.getImg(id);
+//        return new ResponseEntity<>(response,  HttpStatus.OK );
+//    }
+
     @GetMapping("getAllVehicles")
     public ResponseEntity<Response> getAllVehicles(
             @RequestParam(name = "column", defaultValue = "id") String column,
@@ -46,8 +76,11 @@ public class VehicleController {
             @RequestParam(name = "vehicleType",defaultValue = "") VehicleType vehicleType,
             @RequestParam(name = "twoWheelerType",defaultValue = "") TwoWheelerType twoWheelerType,
             @RequestParam(name = "startPrice",defaultValue = "0") Double startPrice,
-            @RequestParam(name = "endPrice",defaultValue = "0") Double endPrice) {
-            Response response = vehicleService.getAllVehicles(column, direction,vehicleType,twoWheelerType,startPrice,endPrice);
+            @RequestParam(name = "endPrice",defaultValue = "0") Double endPrice,
+            @RequestParam(name = "pageNumber",defaultValue = "0") int pageNumber,
+            @RequestParam(name = "pageSize",defaultValue = "5") int pageSize
+            ) {
+            Response response = vehicleService.getAllVehicles(column, direction,vehicleType,twoWheelerType,startPrice,endPrice,pageNumber,pageSize);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 

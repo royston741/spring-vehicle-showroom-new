@@ -43,12 +43,14 @@ public class Vehicle {
 	@Column(name = "two_wheeler_type")
 	private TwoWheelerType twoWheelerType;
 
-	@NotBlank(message = "img must not be empty")
+//	@NotBlank(message = "img must not be empty")
 	@Column(name = "imgUrl")
 	private String imgUrl;
 
-//	@Lob
 	@Column(name = "description",columnDefinition = "TEXT")
 	private String description;
 
+	@Lob
+	@Column(name = "vehicle_img")
+	private String 		vehicleImg;
 }

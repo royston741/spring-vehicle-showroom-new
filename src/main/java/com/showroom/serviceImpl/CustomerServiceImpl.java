@@ -175,6 +175,7 @@ public class CustomerServiceImpl implements CustomerService {
         return response;
     }
 
+    @Transactional
     @Override
     public Response getAllCustomers(String sortBy, String sortDirection, String filterValue, int pageNo,
                                     int pageSize) {
@@ -191,6 +192,7 @@ public class CustomerServiceImpl implements CustomerService {
                 customerPage = customerRepository.findAllByFirstNameLikeOrLastNameLikeOrEmailLikeOrPhoneNoOrAddressLikeAndUserType(
                         filterValue, filterValue, filterValue, filterValue, filterValue, UserType.CUSTOMER, page);
             }
+
             // if customers are present
             if (customerPage.getTotalElements() > 0) {
                 response.setResponseData(customerPage);

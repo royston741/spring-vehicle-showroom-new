@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import com.showroom.constants.TwoWheelerType;
 import com.showroom.constants.VehicleType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -17,11 +19,11 @@ public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
 
 	public Optional<Vehicle> findByName(String name);
 
-	public List<Vehicle> findAllByPriceBetween(Double startPrice, Double endPrice, Sort sort);
+	public Page<Vehicle> findAllByPriceBetween(Double startPrice, Double endPrice, Pageable pageable);
 
-	public List<Vehicle> findAllByPriceBetweenAndVehicleType(Double startPrice, Double endPrice, VehicleType vehicleType, Sort sort);
+	public Page<Vehicle> findAllByPriceBetweenAndVehicleType(Double startPrice, Double endPrice, VehicleType vehicleType,  Pageable pageable);
 
-	public List<Vehicle> findAllByPriceBetweenAndVehicleTypeAndTwoWheelerType(Double startPrice, Double endPrice, VehicleType vehicleType, TwoWheelerType twoWheelerType, Sort sort);
+	public Page<Vehicle> findAllByPriceBetweenAndVehicleTypeAndTwoWheelerType(Double startPrice, Double endPrice, VehicleType vehicleType, TwoWheelerType twoWheelerType,  Pageable pageable);
 
 	@Query("select max(v.price) from Vehicle v")
 	public Double findHighestPrice();

@@ -8,6 +8,7 @@ import com.showroom.repository.CustomerRepository;
 import com.showroom.repository.OrderItemRepository;
 import com.showroom.service.ExcelService;
 import com.showroom.service.OrderItemService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     @Autowired
     ExcelService excelService;
 
+    @Transactional
     @Override
     public Response getAllOrderedItemOfCustomerByCustomerId
             (int customerId, String sortBy, String sortDirection, int pageNo, int pageSize) {

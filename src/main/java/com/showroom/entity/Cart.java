@@ -33,7 +33,7 @@ public class Cart {
     @Column(name = "cart_total")
     private Double cartTotal;
 
-    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE}, mappedBy = "cart",orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.PERSIST,CascadeType.REMOVE,CascadeType.MERGE}, mappedBy = "cart",orphanRemoval = true,fetch = FetchType.EAGER)
     private List<OrderItem> cartItems=new ArrayList<>();
 
     @JsonIgnore

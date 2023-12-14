@@ -117,6 +117,7 @@ public class CartServiceImpl implements CartService {
         return response;
     }
 
+    @Transactional
     @Override
     public Response clearCart(int customerId) {
         Response response = new Response();
@@ -141,6 +142,7 @@ public class CartServiceImpl implements CartService {
         }
         return response;    }
 
+    @Transactional
     @Override
     public Response getCartByCustomerId(int customerId) {
         Response response = new Response();
