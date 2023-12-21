@@ -69,4 +69,23 @@ public class CustomerController {
 		Response response = customerService.logIn(name,password);
 		return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
 	}
+
+	@GetMapping("/getOtpToResetPassword")
+	public ResponseEntity<Response> getOtpToResetPassword(@RequestParam(name="email",defaultValue = "") String email) {
+		Response response = customerService.getOtpToResetPassword(email);
+		return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+	}
+
+	@GetMapping("/validateOtpCode")
+	public ResponseEntity<Response> validateOtpCode(@RequestParam(name="otp",defaultValue = "0") Integer otpCode) {
+		Response response = customerService.validateOtpCode(otpCode);
+		return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+	}
+
+	@PostMapping("/resetPassword")
+	public ResponseEntity<Response> resetPassword(@RequestParam(name="email",defaultValue = "") String email,
+												  @RequestParam(name="password",defaultValue = "") String password) {
+		Response response = customerService.resetPassword(email,password);
+		return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+	}
 }

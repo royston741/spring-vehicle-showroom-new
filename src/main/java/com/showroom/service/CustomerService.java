@@ -19,4 +19,9 @@ public interface CustomerService {
 
 	public Response logIn(String name, String password) ;
 
+	public Response getOtpToResetPassword(String email);
+
+	public Response validateOtpCode(Integer otpCode);
+
+	public Response resetPassword(String email,String password);
 }

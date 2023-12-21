@@ -1,10 +1,15 @@
 package com.showroom.serviceImpl;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.showroom.constants.EmailConstants;
 import com.showroom.constants.UserType;
+import com.showroom.dto.EmailDto;
+import com.showroom.dto.ResetPasswordDto;
 import com.showroom.entity.Cart;
 import com.showroom.exception.EmailDuplicationException;
+import com.showroom.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,7 +25,6 @@ import com.showroom.service.CustomerService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.TransactionSystemException;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -29,6 +33,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     CustomerRepository customerRepository;
+
+    @Autowired
+    EmailService emailService;
+
+    Map<String, Integer> otpList = new HashMap<>();
 
     //    @Transactional
     @Override
@@ -76,7 +85,7 @@ public class CustomerServiceImpl implements CustomerService {
         return response;
     }
 
-//    @Transactional(rollbackFor = ConstraintViolationException.class)
+    //    @Transactional(rollbackFor = ConstraintViolationException.class)
     @Override
     public Response updateCustomer(Customer customer) {
         Response response = new Response();
@@ -227,5 +236,117 @@ public class CustomerServiceImpl implements CustomerService {
         }
         return response;
     }
+
+
+    public Response getOtpToResetPassword(String email) {
+        Response response = new Response();
+        try {
+            // check if customer exist
+            Optional<Customer> existingEmail = customerRepository.findByEmail(email);
+            // if exist
+            if (existingEmail.isPresent()) {
+                Random randomNumber = new Random();
+                int generatedOtp = randomNumber.nextInt(10000);
+
+                String emailId=existingEmail.get().getEmail();
+                EmailDto newEmail = new EmailDto();
+                // send to
+                newEmail.setEmailTo(emailId);
+                // set subject
+                newEmail.setSubject(EmailConstants.RESET_PASSWORD_OTP);
+                // text
+                newEmail.setTextMessage("Your otp to rest password is : " + generatedOtp);
+                // send mail
+                emailService.sendMail(newEmail);
+
+                otpList.put(emailId, generatedOtp);
+
+                Timer timer =new Timer();
+                timer.schedule(new TimerTask() {
+                                   @Override
+                                   public void run() {
+                                       otpList.remove(emailId);
+                                        log.info("Expired otp ---->"+generatedOtp+"------>"+email);
+                                   }
+                               }
+                        , 5 * 60 * 1000);
+
+                response.setResponseData(existingEmail.get().getEmail());
+                response.setSuccess(true);
+            } else {
+                response.getErrMssg().add("Email does not exist.");
+            }
+        } catch (Exception e) {
+            response.getErrMssg().add("Email was not sent.");
+            log.error("Error in getOtpToResetPassword {}", e);
+        }
+        return response;
+    }
+
+    @Override
+    public Response validateOtpCode(Integer otpCode) {
+        Response response = new Response();
+        try {
+            List<ResetPasswordDto> filteredOtp =
+                    otpList.entrySet().stream().
+                            filter(otp -> otp.getValue().equals(otpCode)).
+                            map(otpEntry -> {
+                                ResetPasswordDto resetPasswordData = new ResetPasswordDto();
+                                resetPasswordData.setEmail(otpEntry.getKey());
+                                resetPasswordData.setOtp(otpEntry.getValue());
+                                return resetPasswordData;
+                            }).toList();
+//            System.out.println(filteredOtp);
+
+            if (filteredOtp.isEmpty()) {
+                response.getErrMssg().add("Wrong OTP code");
+            } else {
+               String key= filteredOtp.get(0).getEmail();
+                otpList.remove(key);
+                response.setSuccess(true);
+            }
+        } catch (Exception e) {
+            response.getErrMssg().add("OTP service is down.");
+            log.error("Error in validateOtpCode {}", e);
+        }
+        return response;
+    }
+
+    @Override
+    public Response resetPassword(String email, String newPassword) {
+        Response response = new Response();
+        try {
+            // check if email is already present
+            Optional<Customer> checkIfCustomerExistByEmail = customerRepository.findByEmail(email);
+
+            // if exist
+            if (checkIfCustomerExistByEmail.isPresent()) {
+                Customer customer = checkIfCustomerExistByEmail.get();
+                customer.setPassword(newPassword);
+                // update customer password
+                Customer updatedCustomerPassword = customerRepository.save(customer);
+
+                EmailDto newEmail = new EmailDto();
+                // send to
+                newEmail.setEmailTo(checkIfCustomerExistByEmail.get().getEmail());
+                // set subject
+                newEmail.setSubject(EmailConstants.RESET_OTP_SUCCESS);
+                // text
+                newEmail.setTextMessage("Your password has been reset successfully for MyDrive account ");
+//                 send mail
+                emailService.sendMail(newEmail);
+
+                response.setResponseData(updatedCustomerPassword);
+                response.setSuccess(true);
+            } else {
+                response.getErrMssg().add("Customer does not exist by email "+email);
+            }
+        } catch (Exception e) {
+            response.getErrMssg().add("Password not updated");
+            log.error("Error in updateCustomer {}", e);
+        }
+        return response;
+    }
+
 
 }

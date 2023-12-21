@@ -21,5 +21,6 @@ public class EmailDto {
 
     private String subject;
     private String htmlContentLink;
+    private String textMessage;
     private List<FileMetaData> attachments=new ArrayList<>();
 }

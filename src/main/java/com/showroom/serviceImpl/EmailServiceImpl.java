@@ -56,8 +56,12 @@ public class EmailServiceImpl implements EmailService {
             mimeMessageHelper.setTo(email.getEmailTo());
             // subject
             mimeMessageHelper.setSubject(email.getSubject());
-            //Html
-            mimeMessageHelper.setText(getHtml(email.getHtmlContentLink()), true);
+            if (email.getHtmlContentLink()!=null) {
+                //Html
+                mimeMessageHelper.setText(getHtml(email.getHtmlContentLink()), true);
+            } else {
+                mimeMessageHelper.setText(email.getTextMessage());
+            }
             // for every cc
             Arrays.stream(ccEmails).toList().forEach(mail -> {
                 try {
@@ -67,15 +71,16 @@ public class EmailServiceImpl implements EmailService {
                 }
             });
 
-            // for every attachment
-            email.getAttachments().forEach((attachment) -> {
-                try {
-                    mimeMessageHelper.addAttachment(attachment.getFilename(), new ByteArrayResource(attachment.getAttachment()));
-                } catch (MessagingException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-
+            if(email.getAttachments().size()>0) {
+                // for every attachment
+                email.getAttachments().forEach((attachment) -> {
+                    try {
+                        mimeMessageHelper.addAttachment(attachment.getFilename(), new ByteArrayResource(attachment.getAttachment()));
+                    } catch (MessagingException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
             javaMailSender.send(mimeMailMessage);
         } catch (Exception e) {
             log.error("Error in sendMail {}", e);
@@ -102,4 +107,5 @@ public class EmailServiceImpl implements EmailService {
         }
         return result;
     }
+
 }

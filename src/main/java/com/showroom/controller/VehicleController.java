@@ -43,15 +43,15 @@ public class VehicleController {
         @PostMapping(value = "/createVehicle")
         public ResponseEntity<Response> createVehicle(@RequestBody Vehicle vehicle) {
 
-//            System.out.println(vehicle);
-//        byte[] array=vehicleImageFile.getBytes();
-//        System.out.println(array);
-//        ByteArrayInputStream bos=new ByteArrayInputStream(array);
-//        BufferedImage newImage = ImageIO.read(bos);
-//        // write output image
-//      boolean b=  ImageIO.write(newImage, "jpg", new File(vehicle.getName()+".jpg"));
-//        System.out.println(b);
-//        vehicle.setVehicleImg(vehicleImageFile.getBytes());
+    //            System.out.println(vehicle);
+    //        byte[] array=vehicleImageFile.getBytes();
+    //        System.out.println(array);
+    //        ByteArrayInputStream bos=new ByteArrayInputStream(array);
+    //        BufferedImage newImage = ImageIO.read(bos);
+    //        // write output image
+    //      boolean b=  ImageIO.write(newImage, "jpg", new File(vehicle.getName()+".jpg"));
+    //        System.out.println(b);
+    //        vehicle.setVehicleImg(vehicleImageFile.getBytes());
         Response response = vehicleService.createVehicle(vehicle);
 //        Response response=new Response();
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
@@ -65,7 +65,7 @@ public class VehicleController {
 
 //    @GetMapping("/getImg")
 //    public ResponseEntity<ByteArrayInputStream> getImg(@RequestParam(name = "id",defaultValue = "0") int id, HttpServletRequest request, HttpServletResponse respons) {
-//        ByteArrayInputStream response = vehicleService.getImg(id);
+//        ByteArrayInputStream response = vehicleService.getImg(id);                
 //        return new ResponseEntity<>(response,  HttpStatus.OK );
 //    }
 
