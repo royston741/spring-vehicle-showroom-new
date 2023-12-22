@@ -248,7 +248,7 @@ public class CustomerServiceImpl implements CustomerService {
                 Random randomNumber = new Random();
                 int generatedOtp = randomNumber.nextInt(10000);
 
-                String emailId=existingEmail.get().getEmail();
+                String emailId = existingEmail.get().getEmail();
                 EmailDto newEmail = new EmailDto();
                 // send to
                 newEmail.setEmailTo(emailId);
@@ -261,15 +261,7 @@ public class CustomerServiceImpl implements CustomerService {
 
                 otpList.put(emailId, generatedOtp);
 
-                Timer timer =new Timer();
-                timer.schedule(new TimerTask() {
-                                   @Override
-                                   public void run() {
-                                       otpList.remove(emailId);
-                                        log.info("Expired otp ---->"+generatedOtp+"------>"+email);
-                                   }
-                               }
-                        , 5 * 60 * 1000);
+                expireOtpAfter5Min(email, generatedOtp);
 
                 response.setResponseData(existingEmail.get().getEmail());
                 response.setSuccess(true);
@@ -281,6 +273,19 @@ public class CustomerServiceImpl implements CustomerService {
             log.error("Error in getOtpToResetPassword {}", e);
         }
         return response;
+    }
+
+    public void expireOtpAfter5Min(String email, Integer otp) {
+
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+                           @Override
+                           public void run() {
+                               otpList.remove(email);
+                               log.info("Expired otp ---->" + otp + "------>" + email);
+                           }
+                       }
+                , 5 * 60 * 1000);
     }
 
     @Override
@@ -301,7 +306,7 @@ public class CustomerServiceImpl implements CustomerService {
             if (filteredOtp.isEmpty()) {
                 response.getErrMssg().add("Wrong OTP code");
             } else {
-               String key= filteredOtp.get(0).getEmail();
+                String key = filteredOtp.get(0).getEmail();
                 otpList.remove(key);
                 response.setSuccess(true);
             }
@@ -339,7 +344,7 @@ public class CustomerServiceImpl implements CustomerService {
                 response.setResponseData(updatedCustomerPassword);
                 response.setSuccess(true);
             } else {
-                response.getErrMssg().add("Customer does not exist by email "+email);
+                response.getErrMssg().add("Customer does not exist by email " + email);
             }
         } catch (Exception e) {
             response.getErrMssg().add("Password not updated");
