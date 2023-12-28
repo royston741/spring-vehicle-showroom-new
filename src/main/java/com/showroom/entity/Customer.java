@@ -72,7 +72,7 @@ public class Customer {
 	private List<Order> orders = new ArrayList<>();
 
 	@JsonIgnore
-	@OneToOne(cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, mappedBy = "customer")
+	@OneToOne(fetch = FetchType.LAZY,cascade = { CascadeType.PERSIST, CascadeType.REMOVE }, mappedBy = "customer")
 	private Cart cart = new Cart();
 
 }

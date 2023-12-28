@@ -93,7 +93,7 @@ public class CustomerServiceImpl implements CustomerService {
             // check if email is already present
             Optional<Customer> existingMail = customerRepository.findByEmail(customer.getEmail());
             // if email is present and phone no. not equal to given customer phone no
-            if (existingMail.isPresent() && (!existingMail.get().getPhoneNo().equals(customer.getPhoneNo()))) {
+            if (existingMail.isPresent() && ((!existingMail.get().getId().equals(customer.getId())  ))) {
                 throw new EmailDuplicationException("Email already present");
             }
             // check if customer exist
@@ -184,7 +184,7 @@ public class CustomerServiceImpl implements CustomerService {
         return response;
     }
 
-    @Transactional
+//    @Transactional
     @Override
     public Response getAllCustomers(String sortBy, String sortDirection, String filterValue, int pageNo,
                                     int pageSize) {
@@ -194,12 +194,13 @@ public class CustomerServiceImpl implements CustomerService {
             Pageable page = PageRequest.of(pageNo, pageSize,
                     Sort.by(sortDirection.equals("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC, sortBy));
 
-
-            Page<Customer> customerPage = customerRepository.findAllByUserType(UserType.CUSTOMER, page);
-            // if filter value given than check in the given columns
-            if (filterValue.length() > 0) {
-                customerPage = customerRepository.findAllByFirstNameLikeOrLastNameLikeOrEmailLikeOrPhoneNoOrAddressLikeAndUserType(
-                        filterValue, filterValue, filterValue, filterValue, filterValue, UserType.CUSTOMER, page);
+            Page<Customer> customerPage = null;
+            if (filterValue.length() == 0) {
+                customerPage = customerRepository.findAllByUserType(UserType.CUSTOMER, page);
+                // if filter value given than check in the given columns
+            } else if (filterValue.length() > 0) {
+                customerPage = customerRepository.filterCustomerList(
+                        filterValue,filterValue,filterValue,page);
             }
 
             // if customers are present
@@ -217,6 +218,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     }
 
+//    @Transactional
     @Override
     public Response logIn(String name, String password) {
         Response response = new Response();
@@ -232,12 +234,12 @@ public class CustomerServiceImpl implements CustomerService {
             }
         } catch (Exception e) {
             response.getErrMssg().add("Customer not found");
-            log.error("Error in findCustomerById {}", e);
+            log.error("Error in logIn {}", e);
         }
         return response;
     }
 
-
+    @Override
     public Response getOtpToResetPassword(String email) {
         Response response = new Response();
         try {
@@ -249,6 +251,8 @@ public class CustomerServiceImpl implements CustomerService {
                 int generatedOtp = randomNumber.nextInt(10000);
 
                 String emailId = existingEmail.get().getEmail();
+                otpList.put(emailId, generatedOtp);
+//                System.out.println("List is :"+otpList);
                 EmailDto newEmail = new EmailDto();
                 // send to
                 newEmail.setEmailTo(emailId);
@@ -259,7 +263,6 @@ public class CustomerServiceImpl implements CustomerService {
                 // send mail
                 emailService.sendMail(newEmail);
 
-                otpList.put(emailId, generatedOtp);
 
                 expireOtpAfter5Min(email, generatedOtp);
 
@@ -289,12 +292,13 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Response validateOtpCode(Integer otpCode) {
+    public Response validateOtpCode(Integer otpCode,String email) {
         Response response = new Response();
         try {
+
             List<ResetPasswordDto> filteredOtp =
                     otpList.entrySet().stream().
-                            filter(otp -> otp.getValue().equals(otpCode)).
+                            filter(otp -> otp.getValue().equals(otpCode)&&otp.getKey().equals(email)).
                             map(otpEntry -> {
                                 ResetPasswordDto resetPasswordData = new ResetPasswordDto();
                                 resetPasswordData.setEmail(otpEntry.getKey());
@@ -310,7 +314,7 @@ public class CustomerServiceImpl implements CustomerService {
                 otpList.remove(key);
                 response.setSuccess(true);
             }
-        } catch (Exception e) {
+        }catch (Exception e) {
             response.getErrMssg().add("OTP service is down.");
             log.error("Error in validateOtpCode {}", e);
         }
@@ -352,6 +356,5 @@ public class CustomerServiceImpl implements CustomerService {
         }
         return response;
     }
-
 
 }

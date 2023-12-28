@@ -21,7 +21,7 @@ public interface CustomerService {
 
 	public Response getOtpToResetPassword(String email);
 
-	public Response validateOtpCode(Integer otpCode);
+	public Response validateOtpCode(Integer otpCode,String email);
 
 	public Response resetPassword(String email,String password);
 }

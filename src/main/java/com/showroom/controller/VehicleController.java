@@ -78,9 +78,10 @@ public class VehicleController {
             @RequestParam(name = "startPrice",defaultValue = "0") Double startPrice,
             @RequestParam(name = "endPrice",defaultValue = "0") Double endPrice,
             @RequestParam(name = "pageNumber",defaultValue = "0") int pageNumber,
-            @RequestParam(name = "pageSize",defaultValue = "5") int pageSize
-            ) {
-            Response response = vehicleService.getAllVehicles(column, direction,vehicleType,twoWheelerType,startPrice,endPrice,pageNumber,pageSize);
+            @RequestParam(name = "pageSize",defaultValue = "5") int pageSize,
+            @RequestParam(name = "filterValue",defaultValue = "") String filterValue
+    ) {
+            Response response = vehicleService.getAllVehicles(column, direction,vehicleType,twoWheelerType,startPrice,endPrice,pageNumber,pageSize,filterValue);
         return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 

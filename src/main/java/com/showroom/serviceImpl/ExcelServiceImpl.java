@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -39,7 +41,8 @@ public class ExcelServiceImpl implements ExcelService {
                 HSSFRow dataRow = sheet.createRow(rowDataIndex);
                 dataRow.createCell(0).setCellValue((String) o[0]);
                 dataRow.createCell(1).setCellValue(String.valueOf(o[1]));
-                dataRow.createCell(2).setCellValue(String.valueOf(o[2]));
+                BigDecimal totalRevenue = new BigDecimal((Double) o[2]).setScale(2, RoundingMode.HALF_UP);
+                dataRow.createCell(2).setCellValue(String.valueOf(totalRevenue));
                 rowDataIndex++;
             }
             File file = new File("D:\\excel.xls");

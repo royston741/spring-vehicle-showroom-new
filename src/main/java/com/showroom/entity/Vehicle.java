@@ -44,8 +44,8 @@ public class Vehicle {
 	private TwoWheelerType twoWheelerType;
 
 //	@NotBlank(message = "img must not be empty")
-	@Column(name = "imgUrl")
-	private String imgUrl;
+//	@Column(name = "imgUrl")
+//	private String imgUrl;
 
 	@Column(name = "description",columnDefinition = "TEXT")
 	private String description;

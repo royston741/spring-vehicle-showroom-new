@@ -16,7 +16,10 @@ public interface VehicleService {
 
 	public Response deleteVehicleById(int id);
 
-	public Response getAllVehicles(String columnToSort, String sortDirection, VehicleType vehicleType, TwoWheelerType twoWheelerType, Double startPrice, Double endPrice,int pageNumber, int pageSize) ;
+	public Response getAllVehicles(String columnToSort, String sortDirection,
+								   VehicleType vehicleType, TwoWheelerType twoWheelerType,
+								   Double startPrice, Double endPrice,
+								   int pageNumber, int pageSize,String filterValue) ;
 
 	public Response getMaxAndMinPriceOfVehicles() ;
 

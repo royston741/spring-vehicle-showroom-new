@@ -77,8 +77,9 @@ public class CustomerController {
 	}
 
 	@GetMapping("/validateOtpCode")
-	public ResponseEntity<Response> validateOtpCode(@RequestParam(name="otp",defaultValue = "0") Integer otpCode) {
-		Response response = customerService.validateOtpCode(otpCode);
+	public ResponseEntity<Response> validateOtpCode(@RequestParam(name="otp",defaultValue = "0") Integer otpCode,
+													@RequestParam(name="email",defaultValue = "") String email) {
+		Response response = customerService.validateOtpCode(otpCode,email);
 		return new ResponseEntity<>(response, response.isSuccess() ? HttpStatus.OK : HttpStatus.NOT_FOUND);
 	}
 

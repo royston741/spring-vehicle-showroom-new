@@ -136,27 +136,37 @@ public class VehicleServiceImpl implements VehicleService {
 
     @Transactional
     @Override
-    public Response getAllVehicles(String columnToSort, String sortDirection, VehicleType vehicleType, TwoWheelerType twoWheelerType, Double startPrice, Double endPrice, int pageNumber, int pageSize) {
-
+    public Response getAllVehicles(
+            String columnToSort, String sortDirection,
+            VehicleType vehicleType, TwoWheelerType twoWheelerType,
+            Double startPrice, Double endPrice,
+            int pageNumber, int pageSize, String filterValue)
+    {
         Response response = new Response();
         try {
             // sort ( direction, column)
             Sort sort = Sort.by(sortDirection.equals("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC, columnToSort);
-
             Pageable page = PageRequest.of(pageNumber, pageSize, sort);
-            // all vehicles
-            Page<Vehicle> vehicleList = vehicleRepository.findAll(page);
-            // if start price given and end price
-            if (startPrice >= 0 && endPrice >= 0) {
-                vehicleList = vehicleRepository.findAllByPriceBetween(startPrice, endPrice, page);
-            }
 
-            // if vehicle type given
-            if (vehicleType != null) {
-                vehicleList = vehicleRepository.findAllByPriceBetweenAndVehicleType(startPrice, endPrice, vehicleType, page);
-                // if two wheeler type given
-                if (twoWheelerType != null) {
-                    vehicleList = vehicleRepository.findAllByPriceBetweenAndVehicleTypeAndTwoWheelerType(startPrice, endPrice, vehicleType, twoWheelerType, page);
+            Page<Vehicle> vehicleList = null;
+
+            if (filterValue.length() > 0) {
+                vehicleList = searchForVehicleByVehicleName(filterValue, startPrice, endPrice, vehicleType, twoWheelerType, page);
+            } else {
+                // if start price given and end price
+                if (startPrice >= 0 && endPrice >= 0 && vehicleType == null) {
+                    vehicleList = vehicleRepository.findAllByPriceBetween(startPrice, endPrice, page);
+                }
+
+                // if vehicle type given
+                if (vehicleType != null) {
+                    // if two wheeler type given
+                    if (twoWheelerType != null) {
+                        vehicleList = vehicleRepository.findAllByPriceBetweenAndVehicleTypeAndTwoWheelerType(startPrice, endPrice, vehicleType, twoWheelerType, page);
+                    }else {
+                        vehicleList = vehicleRepository.findAllByPriceBetweenAndVehicleType(startPrice, endPrice, vehicleType, page);
+
+                    }
                 }
             }
 
@@ -173,6 +183,21 @@ public class VehicleServiceImpl implements VehicleService {
         return response;
     }
 
+    public Page<Vehicle> searchForVehicleByVehicleName(String filterValue, Double startPrice, Double endPrice, VehicleType vehicleType, TwoWheelerType twoWheelerType, Pageable page) {
+        Page<Vehicle> resulltPage = null;
+        if (vehicleType != null) {
+            if (twoWheelerType != null) {
+                resulltPage = vehicleRepository.findAllByPriceBetweenAndNameStartsWithIgnoreCaseAndVehicleTypeAndTwoWheelerType(startPrice, endPrice, filterValue, vehicleType, twoWheelerType, page);
+            } else {
+                resulltPage = vehicleRepository.findAllByPriceBetweenAndNameStartsWithIgnoreCaseAndVehicleType(startPrice, endPrice, filterValue, vehicleType, page);
+            }
+        } else {
+            resulltPage = vehicleRepository.findAByPriceBetweenAndNameStartsWithIgnoreCase(startPrice, endPrice, filterValue, page);
+        }
+        return resulltPage;
+    }
+
+    @Override
     public Response getMaxAndMinPriceOfVehicles() {
         Response response = new Response();
         try {
@@ -188,10 +213,5 @@ public class VehicleServiceImpl implements VehicleService {
         return response;
     }
 
-    public Page<Vehicle> convertListToPage(Pageable pageRequest, List<Vehicle> vehicleList) {
-        int start = (int) pageRequest.getOffset();
-        int end = Math.min((start + pageRequest.getPageSize()), vehicleList.size());
-        List<Vehicle> pageContent = vehicleList.subList(start, end);
-        return new PageImpl<>(pageContent, pageRequest, vehicleList.size());
-    }
+
 }

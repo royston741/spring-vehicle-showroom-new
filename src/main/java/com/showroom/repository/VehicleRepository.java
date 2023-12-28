@@ -17,19 +17,25 @@ import com.showroom.entity.Vehicle;
 @Repository
 public interface VehicleRepository extends JpaRepository<Vehicle, Integer> {
 
-	public Optional<Vehicle> findByName(String name);
+    public Optional<Vehicle> findByName(String name);
 
-	public Page<Vehicle> findAllByPriceBetween(Double startPrice, Double endPrice, Pageable pageable);
+    public Page<Vehicle> findAByPriceBetweenAndNameStartsWithIgnoreCase(Double startPrice, Double endPrice, String name, Pageable pageable);
 
-	public Page<Vehicle> findAllByPriceBetweenAndVehicleType(Double startPrice, Double endPrice, VehicleType vehicleType,  Pageable pageable);
+    public Page<Vehicle> findAllByPriceBetweenAndNameStartsWithIgnoreCaseAndVehicleType(Double startPrice, Double endPrice, String name, VehicleType vehicleType, Pageable pageable);
 
-	public Page<Vehicle> findAllByPriceBetweenAndVehicleTypeAndTwoWheelerType(Double startPrice, Double endPrice, VehicleType vehicleType, TwoWheelerType twoWheelerType,  Pageable pageable);
+    public Page<Vehicle> findAllByPriceBetweenAndNameStartsWithIgnoreCaseAndVehicleTypeAndTwoWheelerType(Double startPrice, Double endPrice, String name, VehicleType vehicleType,TwoWheelerType twoWheelerType, Pageable pageable);
 
-	@Query("select max(v.price) from Vehicle v")
-	public Double findHighestPrice();
+    public Page<Vehicle> findAllByPriceBetween(Double startPrice, Double endPrice, Pageable pageable);
 
-	@Query("select min(v.price) from Vehicle v")
-	public Double findLowestPrice();
+    public Page<Vehicle> findAllByPriceBetweenAndVehicleType(Double startPrice, Double endPrice, VehicleType vehicleType, Pageable pageable);
+
+    public Page<Vehicle> findAllByPriceBetweenAndVehicleTypeAndTwoWheelerType(Double startPrice, Double endPrice, VehicleType vehicleType, TwoWheelerType twoWheelerType, Pageable pageable);
+
+    @Query("select max(v.price) from Vehicle v")
+    public Double findHighestPrice();
+
+    @Query("select min(v.price) from Vehicle v")
+    public Double findLowestPrice();
 //	@Query("SELECT v FROM Vehicle v WHERE " + "LOWER(v.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) "
 //			+ "OR v.vehicleType = :vehicleType " + "OR v.twoWheelerType = :twoWheelerType")
 //	Page<Vehicle> findAllByNameOrVehicleTypeOrTwoWheelerType(@Param("name") String name,

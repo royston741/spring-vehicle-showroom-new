@@ -1,7 +1,6 @@
 package com.showroom.serviceImpl;
 
 import com.showroom.entity.Customer;
-import com.showroom.entity.Order;
 import com.showroom.entity.OrderItem;
 import com.showroom.entity.Response;
 import com.showroom.repository.CustomerRepository;
@@ -18,7 +17,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -93,7 +91,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         return result;
     }
 
-    public OrderItem processItem(OrderItem item) {
+    public void processItem(OrderItem item) {
         item.setInitialPrice(item.getVehicle().getPrice());
 
         double initialPrice = item.getInitialPrice();
@@ -113,6 +111,5 @@ public class OrderItemServiceImpl implements OrderItemService {
 
         item.setFinalPrice(initialPrice * item.getQuantity());
 
-        return item;
     }
 }

@@ -16,6 +16,8 @@ import com.showroom.entity.ShowRoomDetails;
 import com.showroom.service.PdfGeneratorService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -37,14 +39,14 @@ public class PdfGeneratorServiceImpl implements PdfGeneratorService {
         document.add(((Paragraph) createParagraph("Billing Details")).setBold().setTextAlignment(TextAlignment.CENTER).setFontSize(20));
 
         // Billing details
-        document.add(((Paragraph) createParagraph("Bill id : " + order.getId())).setMargin(0).setPadding(0));
+        document.add(((Paragraph) createParagraph("Bill Id : " + order.getId())).setMargin(0).setPadding(0));
         document.add(((Paragraph) createParagraph("Bill date : " + LocalDate.now())).setMargin(0).setPadding(0));
 
         // Supplier details
         document.add(((Paragraph) createParagraph("Showroom details :")).setPadding(0).setMargin(0).setMarginTop(20).setBold());
 //        Table showroomTable = new Table(new float[]{400, 400});
         LinkedHashMap<String, String> showroomTableColNames = new LinkedHashMap<>();
-        showroomTableColNames.put("name ",showRoomDetails.getName());
+        showroomTableColNames.put("Name ",showRoomDetails.getName());
         showroomTableColNames.put("Address ",showRoomDetails.getAddress());
         document.add(createTable(showroomTableColNames));
 
@@ -90,8 +92,10 @@ public class PdfGeneratorServiceImpl implements PdfGeneratorService {
         table.setMarginTop(30);
         table.setMarginBottom(20);
         document.add(table);
+
+        BigDecimal orterTotalInBigDecimal = new BigDecimal(order.getTotal()).setScale(2, RoundingMode.HALF_UP);
         // order total
-        document.add(((Paragraph) createParagraph("Order total : Rs " + order.getTotal())).setTextAlignment(TextAlignment.RIGHT).setFontSize(20));
+        document.add(((Paragraph) createParagraph("Order total : Rs " + orterTotalInBigDecimal)).setTextAlignment(TextAlignment.RIGHT).setFontSize(20));
 
         document.close();
         return byteArrayOutputStream.toByteArray();
