@@ -52,5 +52,5 @@ public class Vehicle {
 
 	@Lob
 	@Column(name = "vehicle_img")
-	private String 		vehicleImg;
+	private String 	vehicleImg;
 }
